@@ -23,11 +23,7 @@ public class MainActivity extends AppCompatActivity {
         requestPermissions();
         setMembers();
     }
-
-    public void setMainStatus() {
-
-    }
-
+    
     public void setMembers() {
         mainStatus = findViewById(R.id.main_status);
     }
