@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String name;
     private int temp;
-    private Button view;
+    private int gps;
     private Socket socket;
     private Thread thread;
     private BufferedReader reader;
@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
     private class Receiver implements Runnable {
         @Override
         public void run() {
-            /*try {
+            try {
                 while (isConnected) {
                     if (reader == null || reader.readLine() == null) {
                         view.setBackground(getResources().getDrawable(R.color.colorGray));
@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
                 socket.close();
             } catch (IOException e) {
                 Log.e(TAG, "오류가 발생했습니다.");
-            }*/
+            }
         }
     }
 
