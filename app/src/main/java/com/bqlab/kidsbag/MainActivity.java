@@ -23,9 +23,9 @@ public class MainActivity extends AppCompatActivity {
         requestPermissions();
         setMembers();
     }
-    
+
     public void setMembers() {
-        mainStatus = findViewById(R.id.main_status);
+        mainStatus = findViewById(R.id.main_temperature);
     }
 
     public void requestPermissions() {

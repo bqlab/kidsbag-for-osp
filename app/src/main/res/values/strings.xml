@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">app</string>
+    <string name="main_temperature">온도: </string>
 </resources>
