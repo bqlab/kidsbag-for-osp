@@ -29,13 +29,13 @@ public class MainActivity extends AppCompatActivity {
 
     private String name;
     private int temp;
-    private int gps;
     private Socket socket;
     private Thread thread;
     private BufferedReader reader;
     private boolean isConnected;
 
     Button mainRegister;
+    Button mainMap;
     TextView mainTemperature;
 
     @Override
@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
                 setIP();
             }
         });
-
+        mainMap = findViewById(R.id.main_map);
         mainTemperature = findViewById(R.id.main_temperature);
     }
 
@@ -180,9 +180,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 while (isConnected) {
                     if (reader == null || reader.readLine() == null) {
-                        view.setBackground(getResources().getDrawable(R.color.colorGray));
-                        view.setText(getString(R.string.normal, Room.this.name, 0));
-                        break;
+                        //mainMap.set
                     } else {
                         temp = Integer.parseInt(reader.readLine());
                         runOnUiThread(new Runnable() {
