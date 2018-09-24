@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">app</string>
+    <string name="app_name">kidsbag</string>
     <string name="main_temperature">온도: </string>
     <string name="main_register">디바이스 등록하기</string>
 </resources>

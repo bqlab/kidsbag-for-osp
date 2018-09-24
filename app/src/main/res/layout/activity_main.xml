@@ -25,9 +25,10 @@
         android:textSize="18sp"
         android:textStyle="bold" />
 
-    <Button
+    <fragment
         android:id="@+id/main_map"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        class="com.google.android.gms.maps.MapFragment" />
 
 </LinearLayout>
