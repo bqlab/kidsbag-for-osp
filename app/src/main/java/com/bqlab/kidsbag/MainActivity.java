@@ -31,9 +31,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     final int ACCESS_COARSE_LOCATION = 1;
 
     boolean isConnected = false;
+    boolean isOverheated = false;
+
     double mV = 0, mV1 = 0;
+    int temp = 0;
 
     Button mainRegister;
+    Button mainCommand;
     TextView mainTemperature;
     GoogleMap googleMap;
 
@@ -46,6 +50,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        isConnected = false;
+    }
+
+    @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(0, 0)));
@@ -54,7 +64,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .position(new LatLng(0, 0))
                 .title("현위치"));
     }
-
 
     @Override
     public void run() {
@@ -65,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void run() {
                         setMapMarker(mV, mV1);
+                        setTemperature(temp);
                     }
                 });
             } catch (InterruptedException e) {
@@ -75,12 +85,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void setMembers() {
         mainRegister = findViewById(R.id.main_register);
-        mainRegister.setOnClickListener(new View.OnClickListener() {
+        mainCommand = findViewById(R.id.main_command);
+        mainCommand.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final EditText e = new EditText(MainActivity.this);
                 new AlertDialog.Builder(MainActivity.this)
-                        .setTitle("개발자용 커맨드")
                         .setView(e)
                         .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                             @Override
@@ -107,6 +117,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                         mV = 40.7;
                                         mV1 = -74.2;
                                         break;
+                                    case "cel-def":
+                                        temp = 28;
+                                        break;
+                                    case "cel-oh":
+                                        temp = 40;
+                                        break;
                                 }
                             }
                         })
@@ -132,6 +148,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         googleMap.addMarker(new MarkerOptions()
                 .position(new LatLng(v, v1))
                 .title("현위치"));
+    }
+
+    public void setTemperature(int temp) {
+        if (temp >= 40 && !isOverheated) {
+            isOverheated = true;
+            new AlertDialog.Builder(MainActivity.this)
+                    .setMessage(R.string.main_temperature_oh)
+                    .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).show();
+        }
+        if (temp < 40 && isOverheated)
+            isOverheated = false;
+        String s = getResources().getString(R.string.main_temperature )+ temp + (getResources().getString(R.string.main_temperature_cel));
+        mainTemperature.setText(s);
     }
 
     public void requestPermissions() {
