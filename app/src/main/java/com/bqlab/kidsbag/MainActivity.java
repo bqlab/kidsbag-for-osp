@@ -3,10 +3,13 @@ package com.bqlab.kidsbag;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
+import android.app.Service;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -25,6 +28,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, Runnable {
     final int ACCESS_FINE_LOCATION = 0;
@@ -41,10 +47,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     TextView mainTemperature;
     GoogleMap googleMap;
 
+    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+    DatabaseReference databaseReference = firebaseDatabase.getReference();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        checkInternetState();
         requestPermissions();
         setMembers();
     }
@@ -96,6 +106,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 switch (e.getText().toString()) {
+                                    case "net-state":
+                                        checkInternetState();
+                                        break;
                                     case "co-true":
                                         new Thread(MainActivity.this).start();
                                         isConnected = true;
@@ -108,6 +121,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                             Toast.makeText(MainActivity.this, "its ok", Toast.LENGTH_SHORT).show();
                                         else
                                             Toast.makeText(MainActivity.this, "its not ok", Toast.LENGTH_SHORT).show();
+                                        break;
+                                    case "fb-hey":
+                                        databaseReference.child("test").push().setValue("hey");
                                         break;
                                     case "map-se":
                                         mV = 37.5;
@@ -164,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         if (temp < 40 && isOverheated)
             isOverheated = false;
-        String s = getResources().getString(R.string.main_temperature )+ temp + (getResources().getString(R.string.main_temperature_cel));
+        String s = getResources().getString(R.string.main_temperature) + temp + (getResources().getString(R.string.main_temperature_cel));
         mainTemperature.setText(s);
     }
 
@@ -175,5 +191,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, this.ACCESS_COARSE_LOCATION);
         }
+    }
+
+    public void checkInternetState() {
+        ConnectivityManager mCM = (ConnectivityManager) this.getSystemService(Service.CONNECTIVITY_SERVICE);
+        if (mCM != null) {
+            NetworkInfo networkInfo = mCM.getActiveNetworkInfo();
+            if ((networkInfo != null) && (networkInfo.getState() == NetworkInfo.State.CONNECTED)) {
+                return;
+            }
+        }
+        Toast.makeText(this, "인터넷이 연결되어 있지 않습니다.", Toast.LENGTH_LONG).show();
     }
 }

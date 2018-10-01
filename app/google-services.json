@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "176444555720",
+    "firebase_url": "https://kidsbag-15e51.firebaseio.com",
+    "project_id": "kidsbag-15e51",
+    "storage_bucket": "kidsbag-15e51.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:176444555720:android:253fb31944e97917",
+        "android_client_info": {
+          "package_name": "com.bqlab.kidsbag"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "176444555720-hjmrstfro2f8cs8l9if3rsltmrujbgci.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8zpnlhAVKHzAjt__ce2v4PjqxZgxPqnI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
