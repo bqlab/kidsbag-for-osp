@@ -5,12 +5,10 @@ import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.Service;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -22,17 +20,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, Runnable {
 
@@ -43,11 +41,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     boolean isConnected = false;
     boolean isOverheated = false;
+    boolean isBuzzed = false;
 
-    double mV = 0, mV1 = 0;
-    int temp = 0;
+    Double mV = (double) 0, mV1 = (double) 0;
+    Boolean buzz = false;
+    Integer temp = 0;
 
-    Button mainRegister;
     Button mainCommand;
     TextView mainTemperature;
     GoogleMap googleMap;
@@ -59,9 +58,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        checkInternetState();
-        checkMessegingToken();
-        requestPermissions();
         setMembers();
     }
 
@@ -89,8 +85,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        checkInternetState();
                         setMapMarker(mV, mV1);
                         setTemperature(temp);
+                        setBuzz(buzz);
                     }
                 });
             } catch (InterruptedException e) {
@@ -100,7 +98,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void setMembers() {
-        mainRegister = findViewById(R.id.main_register);
+        new Thread(MainActivity.this).start();
+        isConnected = true;
         mainCommand = findViewById(R.id.main_command);
         mainCommand.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,38 +111,28 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 switch (e.getText().toString()) {
-                                    case "net-state":
-                                        checkInternetState();
-                                        break;
-                                    case "co-true":
-                                        new Thread(MainActivity.this).start();
-                                        isConnected = true;
-                                        break;
-                                    case "co-false":
-                                        isConnected = false;
-                                        break;
-                                    case "co-state":
-                                        if (isConnected)
-                                            Toast.makeText(MainActivity.this, "its ok", Toast.LENGTH_SHORT).show();
-                                        else
-                                            Toast.makeText(MainActivity.this, "its not ok", Toast.LENGTH_SHORT).show();
-                                        break;
-                                    case "fb-hey":
+                                    case "hey":
                                         databaseReference.child("test").push().setValue("hey");
                                         break;
-                                    case "map-se":
-                                        mV = 37.5;
-                                        mV1 = 126.9;
-                                        break;
-                                    case "map-ny":
-                                        mV = 40.7;
-                                        mV1 = -74.2;
-                                        break;
                                     case "cel-def":
-                                        temp = 28;
+                                        databaseReference.child("temp").setValue(28);
                                         break;
                                     case "cel-oh":
-                                        temp = 40;
+                                        databaseReference.child("temp").setValue(40);
+                                        break;
+                                    case "bz-true":
+                                        databaseReference.child("buzz").setValue(true);
+                                        break;
+                                    case "bz-false":
+                                        databaseReference.child("buzz").setValue(false);
+                                        break;
+                                    case "map-se":
+                                        databaseReference.child("v").setValue(37.5);
+                                        databaseReference.child("v1").setValue(126.9);
+                                        break;
+                                    case "map-ny":
+                                        databaseReference.child("v").setValue(40.7);
+                                        databaseReference.child("v1").setValue(-74.2);
                                         break;
                                 }
                             }
@@ -162,6 +151,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         FragmentManager fragmentManager = getFragmentManager();
         MapFragment mapFragment = (MapFragment) fragmentManager.findFragmentById(R.id.main_map);
         mapFragment.getMapAsync(this);
+
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                MainActivity.this.temp = dataSnapshot.child("temp").getValue(Integer.class);
+                MainActivity.this.buzz = dataSnapshot.child("buzz").getValue(Boolean.class);
+                MainActivity.this.mV = dataSnapshot.child("v").getValue(Double.class);
+                MainActivity.this.mV1 = dataSnapshot.child("v1").getValue(Double.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.w(TAG, "onCancelled", databaseError.toException());
+            }
+        });
     }
 
     public void setMapMarker(double v, double v1) {
@@ -190,6 +194,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mainTemperature.setText(s);
     }
 
+    public void setBuzz(boolean buzz) {
+        if (buzz && !isBuzzed) {
+            isBuzzed = true;
+            databaseReference.child("buzz").setValue(false);
+            new AlertDialog.Builder(MainActivity.this)
+                    .setMessage(R.string.main_buzz)
+                    .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).show();
+        }
+        if (!buzz && isBuzzed)
+            isBuzzed = false;
+    }
+
     public void checkInternetState() {
         ConnectivityManager mCM = (ConnectivityManager) this.getSystemService(Service.CONNECTIVITY_SERVICE);
         if (mCM != null) {
@@ -199,21 +220,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
         Toast.makeText(this, "인터넷이 연결되어 있지 않습니다.", Toast.LENGTH_LONG).show();
-    }
-
-    public void checkMessegingToken() {
-        FirebaseInstanceId.getInstance().getToken();
-        if (FirebaseInstanceId.getInstance().getToken() != null) {
-            Log.d(TAG, "token = " + FirebaseInstanceId.getInstance().getToken());
-        }
-    }
-
-    public void requestPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, this.ACCESS_FINE_LOCATION);
-        }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, this.ACCESS_COARSE_LOCATION);
-        }
+        finishAffinity();
     }
 }

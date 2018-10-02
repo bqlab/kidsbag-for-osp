@@ -3,6 +3,7 @@
     <string name="main_temperature">온도: </string>
     <string name="main_temperature_cel">℃</string>
     <string name="main_temperature_oh">디바이스가 높은 온도를 감지했습니다.</string>
+    <string name="main_buzz">디바이스의 부저 버튼을 눌렀습니다.</string>
     <string name="main_register">디바이스 등록하기</string>
     <string name="main_command">테스트를 위한 커맨드 입력</string>
 </resources>
