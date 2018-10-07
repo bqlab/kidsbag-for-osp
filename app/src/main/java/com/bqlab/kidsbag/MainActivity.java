@@ -9,6 +9,10 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.app.job.JobInfo;
+import android.app.job.JobParameters;
+import android.app.job.JobService;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -39,14 +43,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, Runnable {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
     final int ACCESS_FINE_LOCATION = 0;
     final int ACCESS_COARSE_LOCATION = 1;
 
-    boolean isConnected = false;
     boolean isOverheated = false;
     boolean isBuzzed = false;
 
@@ -73,12 +76,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        isConnected = false;
-    }
-
-    @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(0, 0)));
@@ -88,29 +85,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .title("현위치"));
     }
 
-    @Override
-    public void run() {
-        while (isConnected) {
-            try {
-                Thread.sleep(1000);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        checkInternetState();
-                        setMapMarker(mV, mV1);
-                        setTemperature(temp);
-                        setBuzz(buzz);
-                    }
-                });
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     public void setMembers() {
-        new Thread(MainActivity.this).start();
-        isConnected = true;
         mainCommand = findViewById(R.id.main_command);
         mainCommand.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -186,46 +161,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         googleMap.addMarker(new MarkerOptions()
                 .position(new LatLng(v, v1))
                 .title("현위치"));
-    }
-
-    public void setTemperature(int temp) {
-        if (temp >= 40 && !isOverheated) {
-            isOverheated = true;
-            new AlertDialog.Builder(MainActivity.this)
-                    .setMessage(R.string.main_temperature_oh)
-                    .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }).show();
-        }
-        if (temp < 40 && isOverheated)
-            isOverheated = false;
-        String s = getResources().getString(R.string.main_temperature) + temp + (getResources().getString(R.string.main_temperature_cel));
-        mainTemperature.setText(s);
-    }
-
-    public void setBuzz(boolean buzz) {
-        if (buzz && !isBuzzed) {
-            isBuzzed = true;
-            databaseReference.child("buzz").setValue(false);
-            makeNotification("디바이스의 부저 버튼을 눌렀습니다.");
-        }
-        if (!buzz && isBuzzed)
-            isBuzzed = false;
-    }
-
-    public void checkInternetState() {
-        ConnectivityManager mCM = (ConnectivityManager) this.getSystemService(Service.CONNECTIVITY_SERVICE);
-        if (mCM != null) {
-            NetworkInfo networkInfo = mCM.getActiveNetworkInfo();
-            if ((networkInfo != null) && (networkInfo.getState() == NetworkInfo.State.CONNECTED)) {
-                return;
-            }
-        }
-        Toast.makeText(this, "인터넷이 연결되어 있지 않습니다.", Toast.LENGTH_LONG).show();
-        finishAffinity();
     }
 
     public void checkAndroidVersion() {
