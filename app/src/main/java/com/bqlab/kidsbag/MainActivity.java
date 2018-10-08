@@ -12,6 +12,7 @@ import android.app.Service;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import android.app.job.JobInfo;
 <<<<<<< HEAD
 import android.app.job.JobScheduler;
@@ -20,6 +21,8 @@ import android.app.job.JobParameters;
 >>>>>>> b96ff4baab3424396bf0a5483dfb9fb65f8c8f01
 import android.app.job.JobService;
 import android.content.ComponentName;
+=======
+>>>>>>> parent of 67d4d6a... 내일하자 시발
 =======
 >>>>>>> parent of 67d4d6a... 내일하자 시발
 =======
@@ -57,6 +60,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+
+    private static final String TAG = MainActivity.class.getSimpleName();
+
+    final int ACCESS_FINE_LOCATION = 0;
+    final int ACCESS_COARSE_LOCATION = 1;
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
