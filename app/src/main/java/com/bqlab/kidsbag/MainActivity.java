@@ -10,7 +10,11 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.app.job.JobInfo;
+<<<<<<< HEAD
 import android.app.job.JobScheduler;
+=======
+import android.app.job.JobParameters;
+>>>>>>> b96ff4baab3424396bf0a5483dfb9fb65f8c8f01
 import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
@@ -44,9 +48,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, Runnable {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
+<<<<<<< HEAD
     boolean isConnected = false;
+=======
+    private static final String TAG = MainActivity.class.getSimpleName();
+
+    final int ACCESS_FINE_LOCATION = 0;
+    final int ACCESS_COARSE_LOCATION = 1;
+
+>>>>>>> b96ff4baab3424396bf0a5483dfb9fb65f8c8f01
     boolean isOverheated = false;
     boolean isBuzzed = false;
 
@@ -73,12 +85,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        isConnected = false;
-    }
-
-    @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(0, 0)));
@@ -88,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .title("현위치"));
     }
 
+<<<<<<< HEAD
     @Override
     public void run() {
         while (isConnected) {
@@ -109,9 +116,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+=======
+>>>>>>> b96ff4baab3424396bf0a5483dfb9fb65f8c8f01
     public void setMembers() {
-        new Thread(MainActivity.this).start();
-        isConnected = true;
         mainCommand = findViewById(R.id.main_command);
         mainCommand.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .title("현위치"));
     }
 
+<<<<<<< HEAD
     public void setTemperature(int temp) {
         if (temp >= 40 && !isOverheated) {
             isOverheated = true;
@@ -214,6 +222,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         finishAffinity();
     }
 
+=======
+>>>>>>> b96ff4baab3424396bf0a5483dfb9fb65f8c8f01
     public void checkAndroidVersion() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notificationChannel = new NotificationChannel("em", "긴급알림", NotificationManager.IMPORTANCE_DEFAULT);
