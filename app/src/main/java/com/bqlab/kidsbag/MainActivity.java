@@ -1,37 +1,14 @@
 package com.bqlab.kidsbag;
 
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-import android.app.job.JobInfo;
-<<<<<<< HEAD
-import android.app.job.JobScheduler;
-=======
-import android.app.job.JobParameters;
->>>>>>> b96ff4baab3424396bf0a5483dfb9fb65f8c8f01
-import android.app.job.JobService;
-import android.content.ComponentName;
-=======
->>>>>>> parent of 67d4d6a... 내일하자 시발
-=======
->>>>>>> parent of 67d4d6a... 내일하자 시발
-=======
->>>>>>> parent of 67d4d6a... 내일하자 시발
-=======
->>>>>>> parent of 67d4d6a... 내일하자 시발
+
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -59,23 +36,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, Runnable {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-
-    final int ACCESS_FINE_LOCATION = 0;
-    final int ACCESS_COARSE_LOCATION = 1;
-
-    private static final String TAG = MainActivity.class.getSimpleName();
-
-    final int ACCESS_FINE_LOCATION = 0;
-    final int ACCESS_COARSE_LOCATION = 1;
 
     boolean isConnected = false;
     boolean isOverheated = false;
     boolean isBuzzed = false;
 
-    Double mV = (double) 0, mV1 = (double) 0;
+    Double v = (double) 0, v1 = (double) 0;
     Boolean buzz = false;
     Integer temp = 0;
 
@@ -98,6 +67,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        isConnected = false;
+    }
+
+    @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(0, 0)));
@@ -116,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void run() {
                         checkInternetState();
-                        setMapMarker(mV, mV1);
+                        setMapMarker(v, v1);
                         setTemperature(temp);
                         setBuzz(buzz);
                     }
@@ -128,6 +103,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void setMembers() {
+        isConnected = true;
+        new Thread(MainActivity.this).start();
         mainCommand = findViewById(R.id.main_command);
         mainCommand.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             public void onClick(DialogInterface dialog, int which) {
                                 switch (e.getText().toString()) {
                                     case "ini":
+                                        databaseReference.child("buzz").setValue(false);
                                         databaseReference.child("temp").setValue(0);
                                         databaseReference.child("v").setValue(0);
                                         databaseReference.child("v1").setValue(0);
@@ -186,8 +164,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 MainActivity.this.temp = dataSnapshot.child("temp").getValue(Integer.class);
                 MainActivity.this.buzz = dataSnapshot.child("buzz").getValue(Boolean.class);
-                MainActivity.this.mV = dataSnapshot.child("v").getValue(Double.class);
-                MainActivity.this.mV1 = dataSnapshot.child("v1").getValue(Double.class);
+                MainActivity.this.v = dataSnapshot.child("v").getValue(Double.class);
+                MainActivity.this.v1 = dataSnapshot.child("v1").getValue(Double.class);
             }
 
             @Override
@@ -205,7 +183,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .title("현위치"));
     }
 
-<<<<<<< HEAD
     public void setTemperature(int temp) {
         if (temp >= 40 && !isOverheated) {
             isOverheated = true;
@@ -246,8 +223,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         finishAffinity();
     }
 
-=======
->>>>>>> b96ff4baab3424396bf0a5483dfb9fb65f8c8f01
     public void checkAndroidVersion() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notificationChannel = new NotificationChannel("em", "긴급알림", NotificationManager.IMPORTANCE_DEFAULT);
