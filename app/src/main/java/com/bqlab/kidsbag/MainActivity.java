@@ -7,6 +7,10 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
 
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.app.job.JobService;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -36,6 +40,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Objects;
+
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, Runnable {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -64,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
         setMembers();
         checkAndroidVersion();
+        makeJobSchedule();
     }
 
     @Override
@@ -205,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (buzz && !isBuzzed) {
             isBuzzed = true;
             databaseReference.child("buzz").setValue(false);
-            makeNotification("디바이스의 부저 버튼을 눌렀습니다.");
+            //makeNotification("디바이스의 부저 버튼을 눌렀습니다.");
         }
         if (!buzz && isBuzzed)
             isBuzzed = false;
@@ -236,25 +243,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    public void makeNotification(String content) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationManager.notify(0, new NotificationCompat.Builder(this, "em")
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentTitle(content)
-                    .setWhen(System.currentTimeMillis())
-                    .setDefaults(Notification.DEFAULT_ALL)
-                    .setAutoCancel(true)
-                    .setPriority(NotificationCompat.PRIORITY_HIGH)
-                    .build());
-        } else {
-            notificationManager.notify(0, new Notification.Builder(this)
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentTitle(content)
-                    .setWhen(System.currentTimeMillis())
-                    .setDefaults(Notification.DEFAULT_ALL)
-                    .setAutoCancel(true)
-                    .setPriority(Notification.PRIORITY_HIGH)
-                    .build());
-        }
+    public void makeJobSchedule() {
+        ComponentName componentName = new ComponentName(this, DataReceiver.class);
+        JobInfo jobInfo = new JobInfo.Builder(0, componentName)
+                .setRequiresCharging(false)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setPersisted(true)
+                .build();
+
+        JobScheduler jobScheduler =  (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+        int requestCode = Objects.requireNonNull(jobScheduler).schedule(jobInfo);
+        if(requestCode == JobScheduler.RESULT_SUCCESS)
+            Log.d(TAG, "Job scheduled");
+        else
+            Log.d(TAG, "Job scheduling failed");
+    }
+
+    public void cancelJobSchedule() {
+        JobScheduler jobScheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+        Objects.requireNonNull(jobScheduler).cancel(0);
+        Log.d(TAG, "Job cancelled");
     }
 }
