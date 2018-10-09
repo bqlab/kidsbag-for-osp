@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     boolean isOverheated = false;
     boolean isBuzzed = false;
 
-    Double v = (double) 0, v1 = (double) 0;
+    Double lat = (double) 0, lng = (double) 0;
     Boolean buzz = false;
     Integer temp = 0;
 
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void run() {
                         checkInternetState();
-                        setMapMarker(v, v1);
+                        setMapMarker(lat, lng);
                         setTemperature(temp);
                         setBuzz(buzz);
                     }
@@ -119,8 +119,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                     case "ini":
                                         databaseReference.child("buzz").setValue(false);
                                         databaseReference.child("temp").setValue(0);
-                                        databaseReference.child("v").setValue(0);
-                                        databaseReference.child("v1").setValue(0);
+                                        databaseReference.child("lat").setValue(0);
+                                        databaseReference.child("lng").setValue(0);
                                         break;
                                     case "cel-def":
                                         databaseReference.child("temp").setValue(28);
@@ -132,12 +132,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                         databaseReference.child("buzz").setValue(true);
                                         break;
                                     case "map-se":
-                                        databaseReference.child("v").setValue(37.5);
-                                        databaseReference.child("v1").setValue(126.9);
+                                        databaseReference.child("lat").setValue(37.5);
+                                        databaseReference.child("lng").setValue(126.9);
                                         break;
                                     case "map-ny":
-                                        databaseReference.child("v").setValue(40.7);
-                                        databaseReference.child("v1").setValue(-74.2);
+                                        databaseReference.child("lat").setValue(40.7);
+                                        databaseReference.child("lng").setValue(-74.2);
                                         break;
                                 }
                             }
@@ -164,8 +164,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 MainActivity.this.temp = dataSnapshot.child("temp").getValue(Integer.class);
                 MainActivity.this.buzz = dataSnapshot.child("buzz").getValue(Boolean.class);
-                MainActivity.this.v = dataSnapshot.child("v").getValue(Double.class);
-                MainActivity.this.v1 = dataSnapshot.child("v1").getValue(Double.class);
+                MainActivity.this.lat = dataSnapshot.child("lat").getValue(Double.class);
+                MainActivity.this.lng = dataSnapshot.child("lng").getValue(Double.class);
             }
 
             @Override
@@ -175,11 +175,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    public void setMapMarker(double v, double v1) {
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(v, v1)));
+    public void setMapMarker(double lat, double lng) {
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lat, lng)));
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(10));
         googleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(v, v1))
+                .position(new LatLng(lat, lng))
                 .title("현위치"));
     }
 
