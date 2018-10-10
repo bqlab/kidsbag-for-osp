@@ -47,19 +47,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final String TAG = MainActivity.class.getSimpleName();
 
     boolean isConnected = false;
-    boolean isOverheated = false;
-    boolean isBuzzed = false;
 
-    Double lat = (double) 0, lng = (double) 0;
-    Boolean buzz = false;
-    Integer temp = 0;
+    Integer temp;
+    Boolean buzz;
+    Double lat, lng;
 
     Button mainCommand;
     TextView mainTemperature;
     GoogleMap googleMap;
-
-    NotificationManager notificationManager;
-    NotificationChannel notificationChannel;
 
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference = firebaseDatabase.getReference();
@@ -92,11 +87,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void run() {
         while (isConnected) {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(500);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         checkInternetState();
+                        synchronization();
                         setMapMarker(lat, lng);
                         setTemperature(temp);
                     }
@@ -105,6 +101,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 e.printStackTrace();
             }
         }
+    }
+
+    public void synchronization() {
+        buzz = ReceiveService.buzz;
+        temp = ReceiveService.temp;
+        lat = ReceiveService.lat;
+        lng = ReceiveService.lng;
     }
 
     public void setMembers() {
@@ -161,23 +164,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         FragmentManager fragmentManager = getFragmentManager();
         MapFragment mapFragment = (MapFragment) fragmentManager.findFragmentById(R.id.main_map);
         mapFragment.getMapAsync(this);
-
-        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                MainActivity.this.temp = dataSnapshot.child("temp").getValue(Integer.class);
-                MainActivity.this.buzz = dataSnapshot.child("buzz").getValue(Boolean.class);
-                MainActivity.this.lat = dataSnapshot.child("lat").getValue(Double.class);
-                MainActivity.this.lng = dataSnapshot.child("lng").getValue(Double.class);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.w(TAG, "onCancelled", databaseError.toException());
-            }
-        });
     }
 
     public void setMapMarker(double lat, double lng) {
@@ -189,19 +175,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void setTemperature(int temp) {
-        if (temp >= 40 && !isOverheated) {
-            isOverheated = true;
-            new AlertDialog.Builder(MainActivity.this)
-                    .setMessage(R.string.main_temperature_oh)
-                    .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }).show();
-        }
-        if (temp < 40 && isOverheated)
-            isOverheated = false;
         String s = getResources().getString(R.string.main_temperature) + temp + (getResources().getString(R.string.main_temperature_cel));
         mainTemperature.setText(s);
     }
