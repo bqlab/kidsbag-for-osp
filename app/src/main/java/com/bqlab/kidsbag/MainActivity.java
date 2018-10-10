@@ -17,6 +17,7 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -69,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
         setMembers();
         startService();
-        checkAndroidVersion();
     }
 
     @Override
@@ -99,7 +99,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         checkInternetState();
                         setMapMarker(lat, lng);
                         setTemperature(temp);
-                        setBuzz(buzz);
                     }
                 });
             } catch (InterruptedException e) {
@@ -207,16 +206,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mainTemperature.setText(s);
     }
 
-    public void setBuzz(boolean buzz) {
-        if (buzz && !isBuzzed) {
-            isBuzzed = true;
-            databaseReference.child("buzz").setValue(false);
-            //makeNotification("디바이스의 부저 버튼을 눌렀습니다.");
-        }
-        if (!buzz && isBuzzed)
-            isBuzzed = false;
-    }
-
     public void checkInternetState() {
         ConnectivityManager mCM = (ConnectivityManager) this.getSystemService(Service.CONNECTIVITY_SERVICE);
         if (mCM != null) {
@@ -229,22 +218,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         finishAffinity();
     }
 
-    public void checkAndroidVersion() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationChannel = new NotificationChannel("em", "긴급알림", NotificationManager.IMPORTANCE_DEFAULT);
-            notificationChannel.setDescription("긴급한 상황을 알립니다.");
-            notificationChannel.enableLights(true);
-            notificationChannel.enableVibration(true);
-            notificationChannel.setLightColor(Color.GREEN);
-            notificationChannel.setVibrationPattern(new long[]{100, 200, 100, 200});
-            notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
-            notificationManager.createNotificationChannel(notificationChannel);
-        }
-    }
-
     public void startService() {
         Intent i = new Intent(this, ReceiveService.class);
-        i.putExtra("content", "fuck");
+        i.putExtra("content", "디바이스와 실시간으로 데이터를 동기화하고 있습니다.");
         startService(i);
     }
 
