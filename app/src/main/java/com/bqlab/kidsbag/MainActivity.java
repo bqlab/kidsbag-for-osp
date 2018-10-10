@@ -9,16 +9,15 @@ import android.app.Service;
 
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
-import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -69,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setMembers();
+        startService();
         checkAndroidVersion();
     }
 
@@ -242,25 +242,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    public void makeJobSchedule() {
-        ComponentName componentName = new ComponentName(this, DataReceiver.class);
-        JobInfo jobInfo = new JobInfo.Builder(0, componentName)
-                .setRequiresCharging(false)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .setPersisted(true)
-                .build();
-
-        JobScheduler jobScheduler =  (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
-        int requestCode = Objects.requireNonNull(jobScheduler).schedule(jobInfo);
-        if(requestCode == JobScheduler.RESULT_SUCCESS)
-            Log.d(TAG, "Job scheduled");
-        else
-            Log.d(TAG, "Job scheduling failed");
+    public void startService() {
+        Intent i = new Intent(this, ReceiveService.class);
+        i.putExtra("content", "fuck");
+        startService(i);
     }
 
-    public void cancelJobSchedule() {
-        JobScheduler jobScheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
-        Objects.requireNonNull(jobScheduler).cancel(0);
-        Log.d(TAG, "Job cancelled");
+    public void stopService() {
+        stopService(new Intent(this, ReceiveService.class));
     }
 }
