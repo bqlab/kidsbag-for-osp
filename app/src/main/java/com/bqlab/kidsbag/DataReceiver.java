@@ -37,14 +37,12 @@ public class DataReceiver extends JobService {
 
     @Override
     public boolean onStartJob(JobParameters params) {
-        Log.d(TAG, "Job started");
         backgroundWork(params);
         return true;
     }
 
     @Override
     public boolean onStopJob(JobParameters params) {
-        Log.d(TAG, "Job cancelled");
         jobCancelled = true;
         return true;
     }

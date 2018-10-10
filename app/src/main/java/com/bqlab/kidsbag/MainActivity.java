@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
         setMembers();
         checkAndroidVersion();
-        makeJobSchedule();
     }
 
     @Override
