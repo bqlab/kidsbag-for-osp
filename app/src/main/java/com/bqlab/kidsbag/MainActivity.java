@@ -48,9 +48,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     boolean isConnected = false;
 
-    Integer temp;
-    Boolean buzz;
-    Double lat, lng;
+    Integer temp = 0;
+    Boolean buzz = false;
+    Double lat = (double) 0, lng = (double) 0;
 
     Button mainCommand;
     TextView mainTemperature;

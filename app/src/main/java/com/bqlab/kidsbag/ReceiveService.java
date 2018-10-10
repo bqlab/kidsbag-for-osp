@@ -32,9 +32,9 @@ public class ReceiveService extends Service {
     private boolean isBuzzed;
     private boolean isOverheated;
 
-    public static Integer temp;
-    public static Boolean buzz;
-    public static Double lat, lng;
+    public static Integer temp = 0;
+    public static Boolean buzz = false;
+    public static Double lat = (double) 0, lng = (double) 0;
 
     NotificationManager notificationManager;
     NotificationChannel notificationChannel;
