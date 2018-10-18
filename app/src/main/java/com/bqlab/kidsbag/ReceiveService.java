@@ -29,8 +29,9 @@ public class ReceiveService extends Service {
 
     public boolean isConnected = true;
 
-    private boolean isBuzzed;
-    private boolean isOverheated;
+    private boolean isBuzzed = false;
+    private boolean isOverheated = false;
+    private boolean isFreezed = false;
 
     public static Integer temp = 0;
     public static Boolean buzz = false;
@@ -127,12 +128,21 @@ public class ReceiveService extends Service {
         }
         if (!buzz && isBuzzed)
             isBuzzed = false;
+
         if (temp >= 40 && !isOverheated) {
             isOverheated = true;
             makeNotification("디바이스가 40℃ 이상의 온도를 감지했습니다.");
         }
         if (temp < 40 && isOverheated) {
             isOverheated = false;
+        }
+
+        if (temp <= -5 && !isFreezed) {
+            isFreezed = true;
+            makeNotification("디바이스가 영하 5℃ 이하의 온도를 감지했습니다.");
+        }
+        if (temp > -5 && isFreezed) {
+            isFreezed = false;
         }
     }
 
