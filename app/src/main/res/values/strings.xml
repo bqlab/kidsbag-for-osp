@@ -7,4 +7,6 @@
     <string name="main_register">회원가입</string>
     <string name="main_login">로그인</string>
     <string name="main_command">커맨드</string>
+    <string name="main_user">님, 환영합니다!</string>
+    <string name="main_user_out">로그인을 하지 않았습니다.</string>
 </resources>

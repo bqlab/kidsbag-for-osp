@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void run() {
                         checkInternetState();
-                        synchronization();
+                        syncData();
                         setMapMarker(lat, lng);
                         setTemperature(temp);
                     }
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    public void synchronization() {
+    public void syncData() {
         buzz = ReceiveService.buzz;
         temp = ReceiveService.temp;
         lat = ReceiveService.lat;
@@ -118,6 +118,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void init() {
         isConnected = true;
         new Thread(MainActivity.this).start();
+        mainLogin = findViewById(R.id.main_login);
+        mainLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                makeLoginDialog();
+            }
+        });
+        mainRegister = findViewById(R.id.main_register);
+        mainRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                makeRegisterDialog();
+            }
+        });
         mainCommand = findViewById(R.id.main_command);
         mainCommand.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -225,7 +239,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                         public void onClick(DialogInterface dialog, int which) {
                                             final String pw = e.getText().toString();
                                             if (getSharedPreferences("ids", MODE_PRIVATE).getString(id, "none").equals(pw)) {
-                                                databaseReference.child("ids").child(id).setValue(true);
+                                                //databaseReference.child("ids").child(id).setValue(true);
+                                                Toast.makeText(MainActivity.this, "로그인되었습니다.", Toast.LENGTH_LONG).show();
                                                 dialog.dismiss();
                                             } else
                                                 Toast.makeText(MainActivity.this, "비밀번호가 틀렸습니다.", Toast.LENGTH_LONG).show();
@@ -265,9 +280,5 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         }
                     }
                 }).show();
-    }
-
-    public void stopService() {
-        stopService(new Intent(this, ReceiveService.class));
     }
 }
