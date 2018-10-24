@@ -1,6 +1,7 @@
 package com.bqlab.kidsbag;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.FragmentManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -13,6 +14,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -52,7 +54,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     Boolean buzz = false;
     Double lat = (double) 0, lng = (double) 0;
 
+    Button mainLogin;
+    Button mainRegister;
     Button mainCommand;
+
     TextView mainTemperature;
     GoogleMap googleMap;
 
@@ -63,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setMembers();
+        init();
         startService();
     }
 
@@ -110,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         lng = ReceiveService.lng;
     }
 
-    public void setMembers() {
+    public void init() {
         isConnected = true;
         new Thread(MainActivity.this).start();
         mainCommand = findViewById(R.id.main_command);
@@ -195,6 +200,71 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Intent i = new Intent(this, ReceiveService.class);
         i.putExtra("content", "디바이스와 실시간으로 데이터를 동기화하고 있습니다.");
         startService(i);
+    }
+
+    public void makeLoginDialog() {
+        final EditText e = new EditText(this);
+        new AlertDialog.Builder(this)
+                .setTitle("로그인")
+                .setMessage("ID를 입력하세요.")
+                .setView(e)
+                .setPositiveButton("다음", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        final String id = e.getText().toString();
+                        if (getSharedPreferences("ids", MODE_PRIVATE).getString(id, "none").equals("none"))
+                            Toast.makeText(MainActivity.this, "아이디를 찾을 수 없습니다.", Toast.LENGTH_LONG).show();
+                        else {
+                            final EditText e = new EditText(MainActivity.this);
+                            new AlertDialog.Builder(MainActivity.this)
+                                    .setTitle("로그인")
+                                    .setMessage("비밀번호를 입력하세요.")
+                                    .setView(e)
+                                    .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            final String pw = e.getText().toString();
+                                            if (getSharedPreferences("ids", MODE_PRIVATE).getString(id, "none").equals(pw)) {
+                                                databaseReference.child("ids").child(id).setValue(true);
+                                                dialog.dismiss();
+                                            } else
+                                                Toast.makeText(MainActivity.this, "비밀번호가 틀렸습니다.", Toast.LENGTH_LONG).show();
+                                        }
+                                    }).show();
+                        }
+                    }
+                }).show();
+    }
+
+    public void makeRegisterDialog() {
+        final EditText e = new EditText(this);
+        new AlertDialog.Builder(this)
+                .setTitle("회원가입")
+                .setMessage("ID를 입력하세요.")
+                .setView(e)
+                .setPositiveButton("다음", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        final String id = e.getText().toString();
+                        if (!getSharedPreferences("ids", MODE_PRIVATE).getString(id, "none").equals("none"))
+                            Toast.makeText(MainActivity.this, "이미 가입된 아이디입니다.", Toast.LENGTH_LONG).show();
+                        else {
+                            final EditText e = new EditText(MainActivity.this);
+                            new AlertDialog.Builder(MainActivity.this)
+                                    .setTitle("회원가입")
+                                    .setMessage("비밀번호를 입력하세요.")
+                                    .setView(e)
+                                    .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            final String pw = e.getText().toString();
+                                            getSharedPreferences("ids", MODE_PRIVATE).edit().putString(id, pw).apply();
+                                            Toast.makeText(MainActivity.this, "회원가입이 완료되었습니다.", Toast.LENGTH_LONG).show();
+                                        }
+                                    }).show();
+                        }
+                    }
+                }).show();
     }
 
     public void stopService() {

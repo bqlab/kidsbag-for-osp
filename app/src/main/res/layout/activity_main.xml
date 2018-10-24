@@ -9,11 +9,17 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/main_command"
+        android:id="@+id/main_login"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:text="@string/main_command"
-        android:visibility="gone" />
+        android:text="@string/main_login" />
+
+    <Button
+        android:id="@+id/main_register"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="@string/main_register" />
+
 
     <TextView
         android:id="@+id/main_temperature"
