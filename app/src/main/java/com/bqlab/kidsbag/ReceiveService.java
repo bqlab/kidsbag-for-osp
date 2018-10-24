@@ -137,11 +137,11 @@ public class ReceiveService extends Service {
             isOverheated = false;
         }
 
-        if (temp <= -5 && !isFreezed) {
+        if (temp <= -10 && !isFreezed) {
             isFreezed = true;
-            makeNotification("디바이스가 영하 5℃ 이하의 온도를 감지했습니다.");
+            makeNotification("디바이스가 영하 10℃ 이하의 온도를 감지했습니다.");
         }
-        if (temp > -5 && isFreezed) {
+        if (temp > -10 && isFreezed) {
             isFreezed = false;
         }
     }
