@@ -118,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void init() {
+        databaseReference.child("ids").setValue(0);
         mainUser = findViewById(R.id.main_user);
         mainLogin = findViewById(R.id.main_login);
         mainLogin.setOnClickListener(new View.OnClickListener() {
@@ -247,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                                 if (getSharedPreferences("ids", MODE_PRIVATE).getString(id, "none").equals(pw)) {
                                                     Toast.makeText(MainActivity.this, "로그인되었습니다.", Toast.LENGTH_LONG).show();
                                                     MainActivity.this.id = id;
-                                                    databaseReference.child("ids").child(id).setValue(true);
+                                                    databaseReference.child("ids").setValue(1);
                                                     mainLogin.setText(R.string.main_logout);
                                                     String s = id + "님, 환영합니다!";
                                                     mainUser.setText(s);
@@ -282,7 +283,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Toast.makeText(MainActivity.this, "로그아웃 되었습니다.", Toast.LENGTH_LONG).show();
-                            databaseReference.child("ids").child(id).setValue(false);
+                            databaseReference.child("ids").setValue(0);
                             mainLogin.setText(R.string.main_login);
                             mainUser.setText(R.string.main_user_out);
                             stopService();
