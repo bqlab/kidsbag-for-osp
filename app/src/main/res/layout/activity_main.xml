@@ -12,7 +12,8 @@
         android:id="@+id/main_user"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android: android:text="@string/main_user_out"/>
+        android:text="@string/main_user_out"
+        android:textAlignment="textStart" />
 
     <Button
         android:id="@+id/main_login"

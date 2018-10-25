@@ -53,6 +53,10 @@ public class ReceiveService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        temp = 0;
+        lat = 0d;
+        lng = 0d;
+        isConnected = false;
     }
 
     @Nullable
@@ -63,7 +67,7 @@ public class ReceiveService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-       String content = intent.getStringExtra("content");
+        String content = intent.getStringExtra("content");
         Intent i = new Intent(this, MainActivity.class);
         PendingIntent p = PendingIntent.getActivity(this, 0, i, 0);
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
@@ -76,7 +80,7 @@ public class ReceiveService extends Service {
             @Override
             public void run() {
                 try {
-                    while(isConnected) {
+                    while (isConnected) {
                         Thread.sleep(1000);
                         checkTempAndBuzz(buzz, temp);
                     }
@@ -105,6 +109,10 @@ public class ReceiveService extends Service {
                 Log.w("tag", "onCancelled", databaseError.toException());
             }
         });
+    }
+
+    public void setIsConnected(boolean b) {
+        this.isConnected = b;
     }
 
     public void checkAndroidVersion() {
