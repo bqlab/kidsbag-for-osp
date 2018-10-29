@@ -9,4 +9,6 @@
     <string name="main_logout">로그아웃</string>
     <string name="main_command">커맨드</string>
     <string name="main_user_out">로그인을 하지 않았습니다.</string>
+    <string name="map_title">현재 자녀의 위치는</string>
+    <string name="temp_text">0°C</string>
 </resources>
