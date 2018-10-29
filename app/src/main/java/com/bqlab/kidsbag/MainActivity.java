@@ -73,7 +73,8 @@ public class MainActivity extends AppCompatActivity {
         mainBtn1 = findViewById(R.id.main_btn1);
         mainBtn2 = findViewById(R.id.main_btn2);
 
-        if(loginState) {
+        if (loginState) {
+            startService();
             databaseReference.child("ids").setValue(1);
             Toast.makeText(this, "로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show();
             mainBtn1.setBackground(getResources().getDrawable(R.drawable.main_btn_temp));
@@ -81,14 +82,16 @@ public class MainActivity extends AppCompatActivity {
             mainBtn1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startActivity(new Intent(MainActivity.this, TempActivity.class));
+                    startActivity(new Intent(MainActivity.this, TempActivity.class)
+                            .putExtra("login", true));
                     databaseReference.child("ids").setValue(1);
                 }
             });
             mainBtn2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startActivity(new Intent(MainActivity.this, MapActivity.class));
+                    startActivity(new Intent(MainActivity.this, MapActivity.class)
+                            .putExtra("login", true));
                 }
             });
         } else {
@@ -127,5 +130,15 @@ public class MainActivity extends AppCompatActivity {
         }
         Toast.makeText(this, "인터넷이 연결되어 있지 않습니다.", Toast.LENGTH_LONG).show();
         finishAffinity();
+    }
+
+    public void startService() {
+        Intent i = new Intent(this, ReceiveService.class);
+        i.putExtra("content", "디바이스와 실시간으로 데이터를 동기화하고 있습니다.");
+        startService(i);
+    }
+
+    public void stopService() {
+        stopService(new Intent(this, ReceiveService.class));
     }
 }
