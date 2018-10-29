@@ -42,20 +42,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(GoogleMap googleMap) { //구글 지도가 준비되었을 때(최초 한번만 호출됨, 중요하지 않음)
         this.googleMap = googleMap;
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(0, 0)));
-        googleMap.animateCamera(CameraUpdateFactory.zoomTo(10));
-        googleMap.addMarker(new MarkerOptions()
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(0, 0))); //카메라 초점은 위도 경도 0, 0에 맞추기
+        googleMap.animateCamera(CameraUpdateFactory.zoomTo(10)); //줌은 10으로 맞추기
+        googleMap.addMarker(new MarkerOptions() //마커 추가
                 .position(new LatLng(0, 0))
-                .title("현위치"));
+                .title("현위치")); //마커 제목설정
     }
 
     @Override
     public void run() {
         while (isConnected) {
             try {
-                Thread.sleep(500);
+                Thread.sleep(500); //0.5초마다 검사
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -78,10 +78,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     public void setMapMarker() {
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(ReceiveService.lat, ReceiveService.lng)));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(ReceiveService.lat, ReceiveService.lng))); //ReceiveService에서 실시간으로 받은 데이터를 기준으로 함
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(10));
         googleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(ReceiveService.lat, ReceiveService.lng))
+                .position(new LatLng(ReceiveService.lat, ReceiveService.lng))//ReceiveService에서 실시간으로 받은 데이터로 마커 찍기
                 .title("현위치"));
     }
 

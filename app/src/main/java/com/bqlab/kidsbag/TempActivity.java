@@ -24,7 +24,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class TempActivity extends AppCompatActivity implements Runnable {
+public class TempActivity extends AppCompatActivity implements Runnable { //스레드를 따로 사용하는 인터페이스
 
     boolean isConnected;
     TextView tempText;
@@ -40,15 +40,15 @@ public class TempActivity extends AppCompatActivity implements Runnable {
     }
 
     @Override
-    public void run() {
+    public void run() { //스레드 따로 사용
         while (isConnected) {
             try {
-                Thread.sleep(500);
+                Thread.sleep(500); //1000은 1초, 즉 0.5초마다 검사
                 runOnUiThread(new Runnable() {
                     @Override
-                    public void run() {
-                        checkInternetState();
-                        setTemperature();
+                    public void run() { //메인스레드에서 사용할 함수들
+                        checkInternetState(); //인터넷 상태 체크
+                        setTemperature(); //온도 설정하기
                     }
                 });
             } catch (InterruptedException e) {
@@ -59,16 +59,16 @@ public class TempActivity extends AppCompatActivity implements Runnable {
 
     public void init() {
         isConnected = getIntent().getBooleanExtra("login", false);
-        new Thread(TempActivity.this).start();
+        new Thread(TempActivity.this).start(); //위에 스레드 시작하는 메소드
         tempText = findViewById(R.id.temp_text);
     }
 
     public void setTemperature() {
         String s = ReceiveService.temp+"°C";
-        tempText.setText(s);
+        tempText.setText(s); //온도표시
     }
 
-    public void checkInternetState() {
+    public void checkInternetState() { //인터넷 체크
         ConnectivityManager mCM = (ConnectivityManager) this.getSystemService(Service.CONNECTIVITY_SERVICE);
         if (mCM != null) {
             NetworkInfo networkInfo = mCM.getActiveNetworkInfo();

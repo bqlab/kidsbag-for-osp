@@ -66,7 +66,7 @@ public class ReceiveService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(Intent intent, int flags, int startId) { //이 서비스가 시작했을 때 호출되는 함수
         String content = intent.getStringExtra("content");
         Intent i = new Intent(this, MainActivity.class);
         PendingIntent p = PendingIntent.getActivity(this, 0, i, 0);
@@ -75,14 +75,15 @@ public class ReceiveService extends Service {
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentIntent(p)
                 .build();
+        //알림서비스를 이용하기 위한 기본세팅
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     while (isConnected) {
-                        Thread.sleep(1000);
-                        checkTempAndBuzz(buzz, temp);
+                        Thread.sleep(1000); //1초에 한번씩 반복하게 만듦
+                        checkTempAndBuzz(buzz, temp);// 온도와 부저를 확인하는 함수(응급상황을 알려야 하는 두 데이터)
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -97,11 +98,12 @@ public class ReceiveService extends Service {
     public void setDatabaseReference() {
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) { //서버의 데이터가 변경되었을 때 호출되는 함수
                 temp = dataSnapshot.child("temp").getValue(Integer.class);
                 buzz = dataSnapshot.child("buzz").getValue(Boolean.class);
                 lat = dataSnapshot.child("lat").getValue(Double.class);
                 lng = dataSnapshot.child("lng").getValue(Double.class);
+                //temp=온도 buzz=부저 lat=위도 lng=경도
             }
 
             @Override
@@ -125,13 +127,13 @@ public class ReceiveService extends Service {
             notificationChannel.setVibrationPattern(new long[]{100, 200, 100, 200});
             notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
             notificationManager.createNotificationChannel(notificationChannel);
-        }
+        }//안드로이드 8.0 이상일 경우에는 이렇게 노티피케이션 채널을 만들어야 함
     }
 
     public void checkTempAndBuzz(boolean buzz, int temp) {
         if (buzz && !isBuzzed) {
             isBuzzed = true;
-            databaseReference.child("buzz").setValue(false);
+            databaseReference.child("buzz").setValue(false); //파이어베이스의 buzz의 값을 false로
             makeNotification("디바이스의 부저 버튼을 눌렀습니다.");
         }
         if (!buzz && isBuzzed)
@@ -154,7 +156,7 @@ public class ReceiveService extends Service {
         }
     }
 
-    public void makeNotification(String content) {
+    public void makeNotification(String content) { //알림을 만드는 함수
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notificationManager.notify(0, new NotificationCompat.Builder(this, "em")
                     .setSmallIcon(R.mipmap.ic_launcher)
