@@ -62,7 +62,7 @@
         android:layout_marginBottom="57dp"
         android:text="@string/idpw_pw"
         android:textSize="28sp"
-        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintBottom_toTopOf="@+id/idpw_done"
         app:layout_constraintEnd_toStartOf="@+id/idpw_in_pw"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
@@ -83,7 +83,7 @@
         app:layout_constraintTop_toBottomOf="@+id/idpw_in_id" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/idpw_done"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="46dp"

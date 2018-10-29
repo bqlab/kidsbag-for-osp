@@ -12,6 +12,7 @@
     <string name="map_title">현재 자녀의 위치는</string>
     <string name="temp_text">0°C</string>
     <string name="idpw_title_login">로그인</string>
+    <string name="idpw_title_register">회원가입</string>
     <string name="idpw_id">아이디</string>
     <string name="idpw_pw">비밀번호</string>
 </resources>

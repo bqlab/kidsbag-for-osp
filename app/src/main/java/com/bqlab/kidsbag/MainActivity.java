@@ -46,8 +46,6 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
-
     boolean loginState = false;
     Button mainBtn1, mainBtn2;
 
@@ -77,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(loginState) {
             databaseReference.child("ids").setValue(1);
+            Toast.makeText(this, "로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show();
             mainBtn1.setBackground(getResources().getDrawable(R.drawable.main_btn_temp));
             mainBtn2.setBackground(getResources().getDrawable(R.drawable.main_btn_map));
             mainBtn1.setOnClickListener(new View.OnClickListener() {

@@ -20,6 +20,7 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDV-nbHT5rxuBA_IWq6I_WCkoR4AFgjpkE" />
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,7 +28,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service
-            android:name=".ReceiveService" />
+        <activity android:name=".IdpwActivity" />
+        <activity android:name=".TempActivity" />
+        <activity android:name=".MapActivity" />
+        <service android:name=".ReceiveService" />
     </application>
 </manifest>
