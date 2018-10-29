@@ -27,7 +27,6 @@ import com.google.firebase.database.FirebaseDatabase;
 public class TempActivity extends AppCompatActivity implements Runnable {
 
     boolean isConnected;
-    Thread tempThread;
     TextView tempText;
 
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -36,14 +35,8 @@ public class TempActivity extends AppCompatActivity implements Runnable {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_temp);
         init();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        tempThread.stop();
     }
 
     @Override
@@ -66,8 +59,7 @@ public class TempActivity extends AppCompatActivity implements Runnable {
 
     public void init() {
         isConnected = getIntent().getBooleanExtra("login", false);
-        tempThread = new Thread(TempActivity.this);
-        tempThread.start();
+        new Thread(TempActivity.this).start();
         tempText = findViewById(R.id.temp_text);
     }
 

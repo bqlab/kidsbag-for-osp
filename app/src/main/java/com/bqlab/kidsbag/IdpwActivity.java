@@ -40,7 +40,7 @@ public class IdpwActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_idpw);
         checkInternetState();
         init();
     }
@@ -54,7 +54,7 @@ public class IdpwActivity extends AppCompatActivity {
         idpwDone = findViewById(R.id.idpw_done);
 
         if (forWhat.equals("login")) {
-            idpwTitle.setText(R.string.idpw_title_login);
+            idpwTitle.setText(getResources().getString(R.string.idpw_title_login));
             idpwDone.setBackground(getResources().getDrawable(R.drawable.idpw_btn_login));
             idpwDone.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -63,7 +63,8 @@ public class IdpwActivity extends AppCompatActivity {
                     pw = idpwInPw.getText().toString();
 
                     if (!getSharedPreferences("ids", MODE_PRIVATE).getString(id, "none").equals("none")
-                            && getSharedPreferences("ids", MODE_PRIVATE).getString(id, "none").equals(pw)) {
+                            && getSharedPreferences("ids", MODE_PRIVATE).getString(id, "none").equals(pw)
+                            && !id.equals("") && !pw.equals("")) {
                         databaseReference.child("ids").setValue(1);
                         startActivity(new Intent(IdpwActivity.this, MainActivity.class).putExtra("login", true));
                     } else
@@ -71,7 +72,7 @@ public class IdpwActivity extends AppCompatActivity {
                 }
             });
         } else if (forWhat.equals("register")) {
-            idpwTitle.setText(R.string.idpw_title_register);
+            idpwTitle.setText(getResources().getString(R.string.idpw_title_register));
             idpwDone.setBackground(getResources().getDrawable(R.drawable.idpw_btn_register));
             idpwDone.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -79,12 +80,16 @@ public class IdpwActivity extends AppCompatActivity {
                     id = idpwInId.getText().toString();
                     pw = idpwInPw.getText().toString();
 
-                    if (!getSharedPreferences("ids", MODE_PRIVATE).getString(id, "none").equals("none"))
-                        Toast.makeText(IdpwActivity.this, "이미 가입된 아이디입니다.", Toast.LENGTH_SHORT).show();
-                    else {
-                        getSharedPreferences("ids", MODE_PRIVATE).edit().putString(id, pw).apply();
-                        Toast.makeText(IdpwActivity.this, "회원가입이 완료되었습니다.", Toast.LENGTH_LONG).show();
-                    }
+                    if (!(id.equals("") || pw.equals(""))) {
+                        if (!getSharedPreferences("ids", MODE_PRIVATE).getString(id, "none").equals("none"))
+                            Toast.makeText(IdpwActivity.this, "이미 가입된 아이디입니다.", Toast.LENGTH_SHORT).show();
+                        else {
+                            getSharedPreferences("ids", MODE_PRIVATE).edit().putString(id, pw).apply();
+                            Toast.makeText(IdpwActivity.this, "회원가입이 완료되었습니다.", Toast.LENGTH_LONG).show();
+                            finish();
+                        }
+                    } else
+                        Toast.makeText(IdpwActivity.this, "모든 빈 칸을 채워야 합니다.", Toast.LENGTH_SHORT).show();
                 }
             });
         }

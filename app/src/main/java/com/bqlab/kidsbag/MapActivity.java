@@ -37,14 +37,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_map);
         init();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mapThread.stop();
     }
 
     @Override
@@ -77,10 +71,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     public void init() {
         isConnected = getIntent().getBooleanExtra("login", false);
-        mapThread = new Thread(this);
-        mapThread.start();
+        new Thread(this).start();
         FragmentManager fragmentManager = getFragmentManager();
-        MapFragment mapFragment = (MapFragment) fragmentManager.findFragmentById(R.id.main_map);
+        MapFragment mapFragment = (MapFragment) fragmentManager.findFragmentById(R.id.map_fragment);
         mapFragment.getMapAsync(this);
     }
 
